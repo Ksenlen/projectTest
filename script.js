@@ -1,35 +1,29 @@
-const DomElement = function (selector, height, width, bg, fontSize) {
-    this.selector = selector;
-    this.height = height;
-    this.width = width;
-    this.bg = bg;
-    this.fontSize = fontSize;
+"use strict";
+
+let newData;
+
+const getData = (url) => {
+    return fetch(url).then((response) => response.json());
 };
 
-DomElement.prototype.createElement = function (text) {
-    if (this.selector[0] == '.') {
-        const div = document.createElement('div');
-        div.classList.add(this.selector.slice(1));
-        div.textContent = text;
-        div.style.cssText = `
-       height:${this.height}px;
-       width:${this.width}px;
-       background-color:${this.bg};
-       font-size:${this.fontSize}px`;
-        document.body.prepend(div);
-    }
-    if (this.selector[0] == '#') {
-        const newP = document.createElement('p');
-        newP.setAttribute('id', this.selector.slice(1));
-        newP.textContent = text;
-        newP.style.cssText = `
-       height:${this.height}px;
-       width:${this.width}px;
-       background-color:${this.bg};
-       font-size:${this.fontSize}px`;
-        document.body.prepend(newP);
-    };
-}
+const sendData = (url, data) => {
+    return fetch(url, {
+        method: "POST",
+        body: data,
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            //"Content-type": "multipart/form-data",
+        },
+    }).then((response) => response.json());
+};
 
-const domElement1 = new DomElement('.set', 100, 100, 'red', 40);
-domElement1.createElement('что-то пишу');
+getData("db.json").then((data) => {
+    newData = data;
+    console.log(newData);
+});
+
+
+sendData("https://jsonplaceholder.typicode.com/posts", JSON.stringify(newData))
+    .then((newData) => console.log(newData))
+    .catch((error) => console.log(error));
+
